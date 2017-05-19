@@ -1,6 +1,8 @@
 ---
+
 # Epic Routing
-## Rob Cobb - May 18 2017
+
+Rob Cobb - May 18 2017
 
 ---
 
@@ -8,7 +10,7 @@ How to do routing in single page apps?
 
 +++
 
-..but really
+...but really
 
 +++
 
@@ -23,6 +25,7 @@ State of the Art
 React-Router
 
 ```js
+
 const Home = (
   <div>
     <span>My Home Page</span>
@@ -30,15 +33,19 @@ const Home = (
   </div>
 )
 
-<Router>
-  <Route  path="/" component={Home}>
-  <Route  path="/about" component={About}>
-</Router>
+const App = (
+  <Router>
+    <Route  path="/" component={Home}>
+    <Route  path="/about" component={About}>
+  </Router>
+)
+
 ```
 
 +++
 
 Great!
+
 ...So long as you
 
 +++
@@ -52,92 +59,151 @@ Great!
 
 What about replicating complicated single page state?
 
-...like a dashboard? |
++++
+
+...like a dashboard?
 
 ---
 
 Naively
 
----
++++
 
-Represent the state in the url
+### Represent the state in the url
 
-...maybe some action adds to the history as a side effect?
++++
+
+...push history as an action side effect?
 
 ```js
+
 const updateUser = (userId) => {
   history.push(`?userId=${userId}`)
   return { type: 'update_user', userId }
 }
+
+const userReducer = (state, action) => {
+  switch(action.type) {
+    case 'update_user':
+      return action.userId
+    default:
+      return state
+  }
+}
+
 ```
 ---
 
 And, the other direction
 
-(history changes to store state)
++++
+
+### Get history changes as redux actions
 
 +++
 
-Get history changes as redux actions
 (in some initializer)
 
 ```js
+
 import history from 'history'
-import store from 'root/store'
+import store from 'rootstore'
 
 history.listen((location, action) =>
-  store.dispatch({ type: 'location_changed', location, action })
+  store.dispatch({
+    type: 'location_changed',
+    location,
+    action
+  })
 )
+
 ```
 
 +++
 
-whichever reducers need to be updated have actions to respond to
+update the reducer to respond to the url change action...
 
 ```js
-// reducer
-function userId(state, action) {
-  if (action.type === 'location_changed' && action.location.params) {
-    return action.location.params.userId
+
+const userReducer = (state, action) => {
+  switch(action.type) {
+    case 'update_user':
+      return action.userId
+    case 'location_changed':
+      if(action.location.params) {
+        return action.location.params.userId
+      }
+    default:
+      return state
   }
-  return state
 }
+
 ```
 ---
 
-And our Route component
+And, for completeness,
 
----
++++
+
+The Route component
+
++++
 
 ```js
+
+import { connect } from 'react-redux'
+import { updateUser } from 'userId'
+
 class Home extends Component {
-  componentWillMount(props) {
-    initializeComplicatedState(props.location)
+  componentWillMount(props: {location: Location}) {
+    initializeState(props)
   }
 
   componentWillReceiveProps(nextProps) {
-    // this gets particularly tricky
     updateComplexState(props)
   }
 
+```
+
++++
+
+```js
+
   render() {
-    <div>
-      <span>Current User: {props.userId}</span>
-      <Button onClick={() => updateUser(1)}>Choose user 1</Button>
-      <Button onClick={() => updateUser(2)}>Choose user 2</Button>
-      <Button onClick={() => updateUser(3)}>Choose user 3</Button>
-    </div>
+    let { userId, updateUser } = this.props
+    return (
+      <div>
+        <span>Current User: {userId}</span>
+        <Button onClick={() => updateUser(1)}>
+          Choose user 1
+        </Button>
+        <Button onClick={() => updateUser(2)}>
+          Choose user 2
+        </Button>
+        <Button onClick={() => updateUser(3)}>
+          Choose user 3
+        </Button>
+      </div>
+    )
   }
 }
 
-export default connect((state) => { userId: state.userId })(Home)
+export default connect(
+  (state) => { userId: state.userId },
+  { updateUser }
+)(Home)
+
 ```
 
 ---
 
-What might `initializeComplexState`  be doing?
+### Questions
 
-What might `updateComplexState`  be doing?
++++
+
+What's `initializeComplexState`?
+
+What's `updateComplexState`?
 
 +++
 
@@ -147,32 +213,47 @@ What might `updateComplexState`  be doing?
 - calling redux actions to set some state |
 - maybe even |
 - *gasp* |
-- `updateUser(userId)` ?!!?!?!? |
+- updateUser(userId) ?!!?!?!? |
 
 +++
 
+This gets particularly tricky!!
+
 ```js
+
   componentWillReceiveProps(nextProps) {
-    // this gets particularly tricky!!
     updateComplexState(props)
   }
+
 ```
 
 +++
 
-- How to tell which location changes were the ones we triggered?
-  - (this is the problem that keeps on giving)
-- How do the redux actions know _not to update the url_?
-- How do code contributors reason about infinite-loop prone side effects? |
+How to tell which location changes were the ones we triggered?
+
+ (this is the problem that keeps on giving)
+
++++
+
+How do actions know when _not_ to update the url?
+
++++
+
+How do we reason about infinite-loop prone side effects?
 
 +++
 
 ```js
-// This method calls the appropiate actions to setup the dashboard from the
-// route and params. Make sure all actions that are emitted DO NOT route to
-// the dashboard again if there are no changes. Failing to do so will cause
-// an infinite loop between this method and the action callback.
+
+// This method calls the appropiate actions to setup
+// the dashboard from the route and params. Make sure
+// all actions that are emitted DO NOT route to the
+// dashboard again if there are no changes. Failing to
+// do so will cause an infinite loop between this
+// method and the action callback.
 _setupPage: function(userId, currentThreadId, deepLinkingParams) {
+
+
 ```
 +++
 
@@ -180,32 +261,45 @@ _setupPage: function(userId, currentThreadId, deepLinkingParams) {
 
 ---
 
-Goals:
+### Goals
+
++++
+
 - represent state in url
 - restore state on browser action
 - isolate url management from other state management
 
 ---
 
-Represent State in the url: Navigation Reducer
+## represent state in the url
+
+### Navigation Reducer
 
 +++
 
 ```js
-// navigation reducer
+
 const location = (state: Location, action: Action): Location => {
   switch(action.type) {
-    case 'UpdateUser':
-      return {...state, params: {...userId: action.data.userId }}
+    case 'update_user':
+      return {
+        ...state,
+        params: {
+          ...state.params,
+          userId: action.data.userId
+        }
+      }
     default:
       return state
   }
 }
 export location
 
-// root store
+// rootstore.js
 import location from './location'
-export default combineReducers({ location })
+import userId from './userId'
+export default combineReducers({ userId, location })
+
 ```
 
 +++
@@ -213,17 +307,21 @@ export default combineReducers({ location })
 Plumbing
 
 ```js
+
+import store from 'rootstore'
+
 store.subscribe(() => {
   let nextLocation = store.getState().location
   if(nextLocation !== history.location) {
     history.push(nextLocation)
   }
 }
+
 ```
 
 +++
 
-Nothing else should push to history!
+Nothing else should push to history!!
 
 +++
 
@@ -237,25 +335,29 @@ Nothing else should push to history!
 
 ---
 
-Restoring state from history changes
+### Restoring state from history changes
 
----
++++
 
 still want history change actions...
 
 +++
 
 ```js
-import history from 'history'
-import store from 'root/store'
 
+import history from 'history'
+import store from 'rootstore'
+
+// same as before
 history.listen((location, action) =>
   store.dispatch({ type: 'location_changed', location, action })
 )
+
 ```
+
 +++
 
-Instead of handling `'location_changed'` actions in every reducer...
+Instead of `'location_changed'` in every reducer...
 
 ---
 
@@ -264,32 +366,39 @@ Instead of handling `'location_changed'` actions in every reducer...
 +++
 
 ```js
+
 import { Observable } from 'rxjs'
 
 const epic = (action$, store) => {
   const urlUpdate$ = action$.ofType('location_change')
+
   return urlUpdate$.flatMap(action => {
     let { userId } = action.location.params
+
     if (userId !== store.getState().userId) {
-      return { type: 'UpdateUser', userId }
-    }
-    else {
+      return { type: 'update_user', userId }
+    } else {
       return Observable.empty()
     }
   })
 }
+
 ```
+
 (plus some plumbing for epics to work)
 
 +++
 
-- 😇 (mostly) declarative representation of how to restore the state when the url changes
-- 👿 knows about lots of things that have to happen to restore the url |
-- ¯\_(ツ)_/¯ |
+- 😇 (mostly) declarative
+- 😇 restores state from url |
+- 👿 knows about everything restored from the url |
+- ¯\\_(ツ)_/¯ |
 
 +++
 
-Better that this file know enough to handle all the routing than for every reducer to be routing-aware
+All restore logic lives here
+
+Otherwise, routing logic in _every reducer_
 
 ---
 
@@ -302,6 +411,7 @@ What about the infinite loop?
 +++
 
 ```js
+
 // share this var
 var weAreCurrentlyNavigating = false
 
@@ -314,11 +424,22 @@ store.subscribe(() => {
   }
 }
 
+```
+
++++
+
+```js
+
 history.listen((location, action) =>
   if(!weAreCurrentlyNavigating) {
-    store.dispatch({ type: 'location_changed', location, action })
+    store.dispatch({
+      type: 'location_changed',
+      location,
+      action
+    })
   }
 )
+
 ```
 
 +++
@@ -327,15 +448,19 @@ still kind of a pain...
 
 +++
 
-but it's all in the plumbing, nothing else needs to think about it!
+...but it's all in the plumbing!
 
----
++++
 
-[working example (TODO: fill in working example)]()
+Nothing else needs to think about routing!
 
 ---
 
 \#epic
+
+---
+
+[working example (TODO: fill in working example)]()
 
 ---
 
