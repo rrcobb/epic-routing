@@ -5,5 +5,9 @@
   "main": "index.js",
   "repository": "git@github.com:rrcobb/epic-routing.git",
   "author": "Robert Cobb <rwcobbjr@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "redux": "^3.6.0",
+    "redux-observable": "^0.14.1"
+  }
 }
