@@ -46,14 +46,13 @@ const App = (
 
 Great!
 
-...So long as you
-
 +++
 
-- have pages
-- you use `<Link>` to navigate between them
-- each page component handles `props.location`
-- components rerender on location change
+...So long as you
+
+- have pages |
+- navigate with Link |
+- handle props.location in each component |
 
 ---
 
@@ -67,9 +66,12 @@ What about replicating complicated single page state?
 
 Naively
 
+- represent the state in the url |
+- restore the state when the url changes |
+
 +++
 
-### Represent the state in the url
+Represent the state in the url
 
 +++
 
@@ -98,7 +100,7 @@ And, the other direction
 
 +++
 
-### Get history changes as redux actions
+Get history changes as redux actions
 
 +++
 
@@ -163,14 +165,14 @@ class Home extends Component {
     updateComplexState(props)
   }
 
+  render() {
+    let { userId, updateUser } = this.props
+
 ```
 
 +++
 
 ```js
-
-  render() {
-    let { userId, updateUser } = this.props
     return (
       <div>
         <span>Current User: {userId}</span>
@@ -197,17 +199,13 @@ export default connect(
 
 ---
 
-### Questions
-
-+++
-
 What's `initializeComplexState`?
 
 What's `updateComplexState`?
 
 +++
 
-- connecting to services (Pusher, Rollbar)
+- connecting services (Pusher, Rollbar)
 - fetching data |
 - validating url |
 - calling redux actions to set some state |
@@ -261,19 +259,21 @@ _setupPage: function(userId, currentThreadId, deepLinkingParams) {
 
 ---
 
-### Goals
+Goals
 
 +++
 
-- represent state in url
-- restore state on browser action
-- isolate url management from other state management
+- represent state in url |
+- restore state on browser action |
+- isolate url management from other state management |
 
 ---
 
-## represent state in the url
+Represent state in the url
 
-### Navigation Reducer
++++
+
+Navigation Reducer
 
 +++
 
@@ -339,7 +339,7 @@ Nothing else should push to history!!
 
 +++
 
-still want history change actions...
+We still need history change actions...
 
 +++
 
