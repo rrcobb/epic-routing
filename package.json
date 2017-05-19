@@ -6,6 +6,10 @@
   "repository": "git@github.com:rrcobb/epic-routing.git",
   "author": "Robert Cobb <rwcobbjr@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "webpack -p --config webpack.config.js",
+    "start": "serve"
+  },
   "dependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
@@ -18,7 +22,8 @@
     "react-router-dom": "^4.1.1",
     "redux": "^3.6.0",
     "redux-observable": "^0.14.1",
-    "rxjs": "^5.4.0"
+    "rxjs": "^5.4.0",
+    "serve": "^5.1.5"
   },
   "devDependencies": {
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",

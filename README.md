@@ -6,9 +6,9 @@ Here's one redux- and observable-based answer.
 
 Check out the slides on [GitPitch](https://gitpitch.com/rrcobb/epic-routing/master?grs=github)
 
-See the [working demo]()
+See the [working demo](https://epic-routing-hpyotubcli.now.sh)
 
 ### Goals
 - isolate routing logic
-- update url when state changes
+- update url when  changes
 - restore store state from a url

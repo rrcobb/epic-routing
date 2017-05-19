@@ -62,8 +62,18 @@ const Home = () => (
 
 const About = () => (
   <div style={{ display: "flex", flexDirection: "column" }}>
-    <span>See the <a href="">slides</a></span>
-    <span>Check it out on <a href="">github</a></span>
+    <span>
+      See the
+      {" "}
+      <a href="https://gitpitch.com/rrcobb/epic-routing/master?grs=github">
+        slides
+      </a>
+    </span>
+    <span>
+      Check it out on
+      {" "}
+      <a href="https://github.com/rrcobb/epic-routing">github</a>
+    </span>
     <span>
       Click the buttons, watch the url, and try navigating with the browser's forward and back actions.
     </span>
