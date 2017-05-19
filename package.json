@@ -1,0 +1,9 @@
+{
+  "name": "epic-routing",
+  "version": "1.0.0",
+  "description": "Sample routing code with redux-observable",
+  "main": "index.js",
+  "repository": "git@github.com:rrcobb/epic-routing.git",
+  "author": "Robert Cobb <rwcobbjr@gmail.com>",
+  "license": "MIT"
+}
