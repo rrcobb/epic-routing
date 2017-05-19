@@ -156,8 +156,8 @@ The Route component
 import { connect } from 'react-redux'
 import { updateUser } from 'userId'
 
-class Home extends Component {
-  componentWillMount(props: {location: Location}) {
+class Users extends Component {
+  componentWillMount(props) {
     initializeState(props)
   }
 
@@ -191,9 +191,9 @@ class Home extends Component {
 }
 
 export default connect(
-  (state) => { userId: state.userId },
+  (state) => ({ userId: state.userId }),
   { updateUser }
-)(Home)
+)(Users)
 
 ```
 
@@ -278,8 +278,7 @@ Navigation Reducer
 +++
 
 ```js
-
-const location = (state: Location, action: Action): Location => {
+const location = (state, action) => {
   switch(action.type) {
     case 'update_user':
       return {
@@ -293,13 +292,6 @@ const location = (state: Location, action: Action): Location => {
       return state
   }
 }
-export location
-
-// rootstore.js
-import location from './location'
-import userId from './userId'
-export default combineReducers({ userId, location })
-
 ```
 
 +++
@@ -335,7 +327,7 @@ Nothing else should push to history!!
 
 ---
 
-### Restoring state from history changes
+Restoring state from history changes
 
 +++
 
@@ -366,7 +358,6 @@ Instead of `'location_changed'` in every reducer...
 +++
 
 ```js
-
 import { Observable } from 'rxjs'
 
 const epic = (action$, store) => {
@@ -382,7 +373,6 @@ const epic = (action$, store) => {
     }
   })
 }
-
 ```
 
 (plus some plumbing for epics to work)
@@ -392,7 +382,7 @@ const epic = (action$, store) => {
 - 😇 (mostly) declarative
 - 😇 restores state from url |
 - 👿 knows about everything restored from the url |
-- ¯\\_(ツ)_/¯ |
+- ¯\_(ツ)_/¯ |
 
 +++
 
@@ -422,15 +412,14 @@ store.subscribe(() => {
     history.push(nextLocation)
     weAreCurrentlyNavigating = false
   }
-}
-
+})
 ```
 
 +++
 
 ```js
 
-history.listen((location, action) =>
+history.listen((location, action) => {
   if(!weAreCurrentlyNavigating) {
     store.dispatch({
       type: 'location_changed',
@@ -438,7 +427,7 @@ history.listen((location, action) =>
       action
     })
   }
-)
+})
 
 ```
 
