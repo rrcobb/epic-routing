@@ -8,7 +8,7 @@ const location = (state = null, action) => {
     case 'update_user':
       return {
         ...state,
-        search: `userId=${action.userId}`,
+        search: `?userId=${action.userId}`,
       };
     default:
       return state;
