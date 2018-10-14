@@ -6,7 +6,7 @@ Here's one redux- and observable-based answer.
 
 Check out the slides on [GitPitch](https://gitpitch.com/rrcobb/epic-routing/master?grs=github)
 
-See the [demo](https://epic-routing.now.sh)
+See the [demo](https://routing.rob.co.bb)
 
 ### Goals
 - isolate routing logic
