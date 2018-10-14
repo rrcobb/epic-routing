@@ -11,6 +11,7 @@
     "start": "serve"
   },
   "dependencies": {
+    "@babel/core": "^7.1.2",
     "babel-core": "^6.24.1",
     "babel-loader": "^8.0.4",
     "babel-preset-env": "^1.4.0",
@@ -27,10 +28,9 @@
     "serve": "^10.0.2"
   },
   "devDependencies": {
-    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "webpack": "^4.20.2"
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
   }
 }
